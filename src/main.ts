@@ -6,7 +6,7 @@ import { REQUESTS_REGEX } from "./utils/DecoderUtils.ts";
 
 const port = 10101;
 
-const sender = createConnection("62.240.227.134:10011");
+const sender = createConnection(10011, "62.240.227.134");
 sender.on("error", (...data) => console.log("error", ...data));
 sender.on("close", (e) => console.log("close, err :", e));
 sender.on("data", (data) => console.log("data", [data.toString()]));
