@@ -13,6 +13,8 @@ const server = createServer((c) => {
     console.log("close, err :", withError);
   });
   c.on("data", async (data) => {
+    console.log([data]);
+
     // Get list of requests
     const requests = data.toString().match(REQUESTS_REGEX);
 
