@@ -24,7 +24,7 @@ export class MessageAcknowledgment {
       this.MSA.textMessage ?? "", // MSA.3
       this.MSA.expectedSequenceNumber?.toString() ?? "", // MSA.4
       this.MSA.receivingApplication ?? "", // MSA.5
-      encodeCodedElement(this.MSA.errorCondition), // MSA.6
+      encodeCodedElement("^", this.MSA.errorCondition) ?? "", // MSA.6
     ];
     return values.join("|");
   };

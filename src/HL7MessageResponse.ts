@@ -4,6 +4,7 @@ import {
   MessageAcknowledgmentType,
 } from "./HL7MessageAcknowlegment.ts";
 import { MessageError, MessageErrorType } from "./HL7MessageError.ts";
+import { DateTime } from "luxon";
 
 export class HL7MessageResponse {
   MSH: MessageHeader;
@@ -25,7 +26,7 @@ export class HL7MessageResponse {
       {
         fieldSeparator: "|",
         encoding: "^~\\&",
-        datetimeOfMessage: new Date(Date.now()).toISOString(),
+        datetimeOfMessage: DateTime.now().toFormat("YYYYMMDDHHMMSS.SSSS"),
         messageType: {
           messageType: "ACK",
           messageStructure: "ACK",

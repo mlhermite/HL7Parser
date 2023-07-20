@@ -12,7 +12,7 @@ import {
   VersionIdentifier,
 } from "./HL7MessageObjects.ts";
 import { TimeStamp } from "./HL7MessageValues.ts";
-import { segmentRegex } from "./utils/ParserUtils.ts";
+import { segmentRegex } from "./utils/DecoderUtils.ts";
 
 export type MessageHeaderType = {
   fieldSeparator?: string; // MSH.1
@@ -73,16 +73,16 @@ export class MessageHeader {
       "MSH",
       // this.MSH.fieldSeparator, // MSH.1
       `${this.parserSettings.componentSeparator}${this.parserSettings.repetitionSeparator}${this.parserSettings.escapeCharacter}${this.parserSettings.subcomponentSeparator}`, // MSH.2
-      encodeHierarchicDesignator(this.MSH.sendingApplication), // MSH.3
-      encodeHierarchicDesignator(this.MSH.sendingFacility), // MSH.4
-      encodeHierarchicDesignator(this.MSH.receivingApplication), // MSH.5
-      encodeHierarchicDesignator(this.MSH.receivingFacility), // MSH.6
+      encodeHierarchicDesignator(this.MSH.sendingApplication) ?? "", // MSH.3
+      encodeHierarchicDesignator(this.MSH.sendingFacility) ?? "", // MSH.4
+      encodeHierarchicDesignator(this.MSH.receivingApplication) ?? "", // MSH.5
+      encodeHierarchicDesignator(this.MSH.receivingFacility) ?? "", // MSH.6
       this.MSH.datetimeOfMessage ?? "", // MSH.7
       this.MSH.security ?? "", // MSH.8
-      encodeMessage(this.MSH.messageType), // MSH.9
+      encodeMessage(this.MSH.messageType) ?? "", // MSH.9
       this.MSH.messageControl, // MSH.10
-      encodeProcessingType(this.MSH.processingID), // MSH.11
-      encodeVersionIdentifier(this.MSH.versionID), // MSH.12
+      encodeProcessingType(this.MSH.processingID) ?? "", // MSH.11
+      encodeVersionIdentifier(this.MSH.versionID) ?? "", // MSH.12
       this.MSH.sequenceNumber?.toString() ?? "", // MSH.13
       "",
       "",

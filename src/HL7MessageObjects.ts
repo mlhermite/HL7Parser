@@ -10,7 +10,8 @@ import {
   UniversalIdType,
   VersionID,
 } from "./HL7MessageValues.ts";
-import { componentRegex } from "./utils/ParserUtils.ts";
+import { componentRegex } from "./utils/DecoderUtils.ts";
+import { makeComponent } from "./utils/EncoderUtils.ts";
 
 export type ParserSettings = {
   fieldSeparator: string;
@@ -28,15 +29,15 @@ export type HierarchicDesignator = {
 
 export const encodeHierarchicDesignator = (value?: HierarchicDesignator) => {
   if (!value) {
-    return "";
+    return undefined;
   }
 
-  const values: string[] = [
-    value.namespaceId ?? "", // HD.1
-    value.universalId ?? "", // HD.2
-    value.universalIdType ?? "", // HD.3
-  ];
-  return values.join("^");
+  return makeComponent(
+    "^",
+    value.namespaceId, // HD.1
+    value.universalId, // HD.2
+    value.universalIdType, // HD.3
+  );
 };
 
 export type Message = {
@@ -47,15 +48,15 @@ export type Message = {
 
 export const encodeMessage = (value?: Message) => {
   if (!value) {
-    return "";
+    return undefined;
   }
 
-  const values: string[] = [
-    value.messageType ?? "", // MSG.1
-    value.triggerEvent ?? "", // MSG.2
-    value.messageStructure ?? "", // MSG.3
-  ];
-  return values.join("^");
+  return makeComponent(
+    "^",
+    value.messageType, // MSG.1
+    value.triggerEvent, // MSG.2
+    value.messageStructure, // MSG.3
+  );
 };
 
 export const decodeMessage = (
@@ -78,14 +79,14 @@ export type ProcessingType = {
 
 export const encodeProcessingType = (value?: ProcessingType) => {
   if (!value) {
-    return "";
+    return undefined;
   }
 
-  const values: string[] = [
-    value.processingID ?? "", // PT.1
-    value.processingMode ?? "", // PT.2
-  ];
-  return values.join("^");
+  return makeComponent(
+    "^",
+    value.processingID, // PT.1
+    value.processingMode, // PT.2
+  );
 };
 
 export const decodeProcessingType = (
@@ -109,20 +110,20 @@ export type CodedElement = {
   nameOfAlternateCodingSystem?: CodingSystem; // CE.6
 };
 
-export const encodeCodedElement = (value?: CodedElement) => {
+export const encodeCodedElement = (separator: string, value?: CodedElement) => {
   if (!value) {
-    return "";
+    return undefined;
   }
 
-  const values: string[] = [
-    value.identifier ?? "", // CE.1
-    value.text ?? "", // CE.2
-    value.nameOfCodingSystem ?? "", // CE.3
-    value.alternateIdentifier ?? "", // CE.4
-    value.alternateText ?? "", // CE.5
-    value.nameOfAlternateCodingSystem ?? "", // CE.6
-  ];
-  return values.join("^");
+  return makeComponent(
+    separator,
+    value.identifier, // CE.1
+    value.text, // CE.2
+    value.nameOfCodingSystem, // CE.3
+    value.alternateIdentifier, // CE.4
+    value.alternateText, // CE.5
+    value.nameOfAlternateCodingSystem, // CE.6
+  );
 };
 
 export type VersionIdentifier = {
@@ -133,15 +134,15 @@ export type VersionIdentifier = {
 
 export const encodeVersionIdentifier = (value?: VersionIdentifier) => {
   if (!value) {
-    return "";
+    return undefined;
   }
 
-  const values: string[] = [
-    value.versionID ?? "", // VID.1
-    value.internationalizationCode ?? "", // VID.2
-    encodeCodedElement(value.internationalVersionId), // VID.3
-  ];
-  return values.join("^");
+  return makeComponent(
+    "^",
+    value.versionID, // VID.1
+    value.internationalizationCode, // VID.2
+    encodeCodedElement("&", value.internationalVersionId), // VID.3
+  );
 };
 
 export const decodeVersionIdentifier = (
@@ -166,14 +167,14 @@ export type ELDError = {
 
 export const encodeELDError = (value?: ELDError) => {
   if (!value) {
-    return "";
+    return undefined;
   }
 
-  const values: string[] = [
-    value.segmentID ?? "", // ELD.1
-    value.sequence?.toString() ?? "", // ELD.2
-    value.fieldPosition?.toString() ?? "", // ELD.3
-    encodeCodedElement(value.codeIdentifyingError) ?? "", // ELD.4
-  ];
-  return values.join("^");
+  return makeComponent(
+    "^",
+    value.segmentID, // ELD.1
+    value.sequence?.toString(), // ELD.2
+    value.fieldPosition?.toString(), // ELD.3
+    encodeCodedElement("&", value.codeIdentifyingError), // ELD.4
+  );
 };

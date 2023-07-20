@@ -10,7 +10,7 @@ export class MessageError {
   encode = () => {
     const values: string[] = [
       "ERR",
-      encodeELDError(this.ERR.errorCodeAndLocation), // ERR.1
+      encodeELDError(this.ERR.errorCodeAndLocation) ?? "", // ERR.1
     ];
     return values.join("|");
   };

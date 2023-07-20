@@ -2,7 +2,7 @@ import { createServer } from "net";
 import { logMessage } from "./utils/LogMessage.ts";
 import { HL7MessageResponse } from "./HL7MessageResponse.ts";
 import { HL7MessageRequest } from "./HL7MessageRequest.ts";
-import { REQUESTS_REGEX } from "./utils/ParserUtils.ts";
+import { REQUESTS_REGEX } from "./utils/DecoderUtils.ts";
 
 const port = 10101;
 
