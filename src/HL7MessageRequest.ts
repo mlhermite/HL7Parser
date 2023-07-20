@@ -5,7 +5,6 @@ export class HL7MessageRequest {
 
   constructor(readonly content: string) {
     const lines = content.split("\r");
-    console.log(lines.map((line) => line.replace("\v", "V")));
     this.MSH = MessageHeader.decode(
       lines.find((line) => line.startsWith("MSH")),
     );

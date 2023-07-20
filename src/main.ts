@@ -25,6 +25,7 @@ const server = createServer((c) => {
       await logMessage(request, "request", hl7Request.MSH.MSH.messageControl);
       const response = HL7MessageResponse.OkResponse(hl7Request);
       await logMessage(response, "response", hl7Request.MSH.MSH.messageControl);
+      console.log([response.encode()]);
       c.write(response.encode(), "utf-8");
     });
   });
