@@ -10,7 +10,7 @@ export const logMessage = async (
   const data = content.replace(/\r/g, "\n");
 
   const text = `${id} - ${DateTime.now().toFormat(
-    "YYYY-MM-DD HH:MM:SS.SSSS",
+    "yyyy-LL-dd HH:mm:ss.SSS",
   )} - ${type}:\n${data}\n---------------------------------${
     type === "response" ? "\n---------------------------------\n" : "\n"
   }`;

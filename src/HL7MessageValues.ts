@@ -1,3 +1,5 @@
+export const DateFormat = "yyyyLLddHHmmss.SSS" as const;
+
 export type UniversalIdType =
   | "DNS"
   | "GUID"
