@@ -43,7 +43,7 @@ export class HL7MessageResponse {
       },
     );
   encode = () =>
-    `${this.MSH.encode()}\r${this.MSA.encode()}\r${
+    `\v${this.MSH.encode()}\r${this.MSA.encode()}\r${
       this.ERR ? `${this.ERR.encode()}\r` : ""
-    }`;
+    }\x1C\r`;
 }
