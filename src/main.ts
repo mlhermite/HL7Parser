@@ -10,9 +10,6 @@ const sender = createConnection(10011, "62.240.227.134");
 sender.on("error", (...data) => console.log("error", ...data));
 sender.on("close", (e) => console.log("close, err :", e));
 sender.on("data", (data) => console.log("data", [data.toString()]));
-sender.write(
-  "\vMSH|^~\\&|||||20230720125249||ACK^A01^ACK|20230720145249|P|2.5|||||||||\x1c\r",
-);
 
 const server = createServer((socket) => {
   console.log("client connected");

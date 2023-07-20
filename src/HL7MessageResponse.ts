@@ -35,11 +35,11 @@ export class HL7MessageResponse {
         },
         processingID: { processingID: "P" },
         versionID: { versionID: "2.5" },
-        messageControl: request.MSH.MSH.messageControl,
+        messageControl: DateTime.now().toFormat(DateFormat),
       },
       {
         acknowledgementCode: "AA",
-        messageControlID: "",
+        messageControlID: request.MSH.MSH.messageControl,
       },
     );
   encode = () =>
