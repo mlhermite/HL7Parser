@@ -34,7 +34,7 @@ export class HL7MessageResponse {
           triggerEvent: "A01",
         },
         processingID: { processingID: "P" },
-        versionID: {},
+        versionID: { versionID: "2.5" },
         messageControl: request.MSH.MSH.messageControl,
       },
       {

@@ -1,4 +1,4 @@
-export const DateFormat = "yyyyLLddHHmmss.SSS" as const;
+export const DateFormat = "yyyyLLddHHmmss" as const;
 
 export type UniversalIdType =
   | "DNS"
