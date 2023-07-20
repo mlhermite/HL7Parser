@@ -3,6 +3,7 @@ import { appendFile } from "fs";
 export const logMessage = async (
   msg: { encode: () => string } | string,
   type: "request" | "response",
+  id: string,
 ) => {
   const content = typeof msg == "string" ? msg : msg.encode();
   const data = content.replace(/\r/g, "\n");
@@ -10,8 +11,10 @@ export const logMessage = async (
   await new Promise((resolve, reject) =>
     appendFile(
       "log.txt",
-      `${type}:\n${data}\n---------------------------------${
-        type === "response" ? "\n---------------------------------" : ""
+      `${id} - ${new Date(
+        Date.now(),
+      ).toISOString()} - ${type}:\n${data}\n---------------------------------${
+        type === "response" ? "\n---------------------------------\n" : "\n"
       }`,
       "utf-8",
       (err) => (err ? reject(err) : resolve(undefined)),

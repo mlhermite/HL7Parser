@@ -109,7 +109,6 @@ export class MessageHeader {
     };
 
     const items = content.split(segmentRegex(parserSettings));
-    console.log(parserSettings, items, items[8], items[10], items[11]);
     return new MessageHeader({
       fieldSeparator: parserSettings.fieldSeparator,
       encoding: items[1], // MSH.2
