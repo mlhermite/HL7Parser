@@ -101,15 +101,15 @@ export class MessageHeader {
       throw new Error("NO HEADER");
     }
     const parserSettings = {
-      fieldSeparator: content[4],
-      componentSeparator: content[5],
-      repetitionSeparator: content[6],
-      escapeCharacter: content[7],
-      subcomponentSeparator: content[8],
+      fieldSeparator: content[3],
+      componentSeparator: content[4],
+      repetitionSeparator: content[5],
+      escapeCharacter: content[6],
+      subcomponentSeparator: content[7],
     };
 
     const items = content.split(segmentRegex(parserSettings));
-    console.log(items, items[8], items[10], items[11]);
+    console.log(parserSettings, items, items[8], items[10], items[11]);
     return new MessageHeader({
       fieldSeparator: parserSettings.fieldSeparator,
       encoding: items[1], // MSH.2
