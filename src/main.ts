@@ -6,13 +6,14 @@ import { REQUESTS_REGEX } from "./utils/DecoderUtils.ts";
 
 const port = 10101;
 
-const server = createServer((c) => {
+const server = createServer((socket) => {
   console.log("client connected");
 
-  c.on("close", (withError) => {
+  socket.on("close", (withError) => {
     console.log("close, err :", withError);
   });
-  c.on("data", async (data) => {
+  socket.on("data", async (data) => {
+    console.log(socket.remoteAddress, socket.remotePort, socket.remoteFamily);
     console.log([data.toString()]);
 
     // Get list of requests
@@ -28,7 +29,7 @@ const server = createServer((c) => {
       const response = HL7MessageResponse.OkResponse(hl7Request);
       await logMessage(response, "response", hl7Request.MSH.MSH.messageControl);
       console.log([response.encode()]);
-      c.write(response.encode(), "utf-8");
+      socket.write(response.encode(), "utf-8");
     });
   });
 });
