@@ -22,9 +22,9 @@ const server = createServer((c) => {
 
     requests.map(async (request) => {
       const hl7Request = new HL7MessageRequest(request);
-      await logMessage(request, "request");
+      await logMessage(request, "request", hl7Request.MSH.MSH.messageControl);
       const response = HL7MessageResponse.OkResponse(hl7Request);
-      await logMessage(response, "response");
+      await logMessage(response, "response", hl7Request.MSH.MSH.messageControl);
       c.write(response.encode(), "utf-8");
     });
   });
