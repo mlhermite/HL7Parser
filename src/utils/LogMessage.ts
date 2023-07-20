@@ -5,7 +5,7 @@ export const logMessage = async (
   type: "request" | "response",
 ) => {
   const content = typeof msg == "string" ? msg : msg.encode();
-  const data = content.replace("\r", "\n");
+  const data = content.replace(/\r/g, "\n");
 
   await new Promise((resolve, reject) =>
     appendFile(

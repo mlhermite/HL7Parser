@@ -1,5 +1,6 @@
 import { ParserSettings } from "../HL7MessageObjects.ts";
 
+export const REQUESTS_REGEX = /(?<=\v)(.+)(?=\x1C\r)/gs;
 export const escapableRegex = (char: string, escapeChar: string) =>
   new RegExp(
     `(?:(?<!${escapeChar}${escapeChar})|(?<=(?:${escapeChar}${escapeChar}${escapeChar}${escapeChar})+))${escapeChar}${char}`,
