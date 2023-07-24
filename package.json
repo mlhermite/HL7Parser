@@ -15,6 +15,7 @@
     "vite-node": "0.33.0"
   },
   "dependencies": {
-    "luxon": "^3.3.0"
+    "luxon": "^3.3.0",
+    "typescript-json-decoder": "1.0.11"
   }
 }
