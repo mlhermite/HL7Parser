@@ -15,7 +15,6 @@ export const encodeMessageHeader = (item: MessageHeader, settings: HL7Settings):
   return makeComponent(
     settings.fieldSeparator,
     'MSH',
-    item.fieldSeparator,
     encodeString(item.encodingCharacters, 'component', settings),
     encodeHierarchicDesignator(item.sendingApplication, 'component', settings),
     encodeHierarchicDesignator(item.sendingFacility, 'component', settings),
