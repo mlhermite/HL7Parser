@@ -10,7 +10,7 @@ export const decodeDischargeToLocationAndDate = (type: HL7Type, settings: HL7Set
     type,
     settings,
     (data: unknown[]): DischargeToLocationAndDate => ({
-      dischargeToLocation: reqComponent('DLD.1', 0, decodeCodedWithExceptions('component', settings), data[1]),
-      effectiveDate: optComponent('DLD.2', 0, decodeDatetime, data[2]),
+      dischargeToLocation: reqComponent('DLD.1', 0, decodeCodedWithExceptions('component', settings), data[0]),
+      effectiveDate: optComponent('DLD.2', 0, decodeDatetime, data[1]),
     }),
   );

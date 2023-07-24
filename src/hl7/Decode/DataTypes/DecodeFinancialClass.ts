@@ -10,7 +10,7 @@ export const decodeFinancialClass = (type: HL7Type, settings: HL7Settings) =>
     type,
     settings,
     (data: unknown[]): FinancialClass => ({
-      financialClassCode: reqComponent('FC.1', 0, decodeCodedWithExceptions('component', settings), data[1]),
-      effectiveDate: optComponent('FC.2', 0, decodeDatetime, data[2]),
+      financialClassCode: reqComponent('FC.1', 0, decodeCodedWithExceptions('component', settings), data[0]),
+      effectiveDate: optComponent('FC.2', 0, decodeDatetime, data[1]),
     }),
   );

@@ -13,10 +13,10 @@ export const decodeEncapsulatedData = (type: HL7Type, settings: HL7Settings) =>
     type,
     settings,
     (data: unknown[]): EncapsulatedData => ({
-      sourceApplication: optComponent('ED.1', 0, decodeHierarchicDesignator(getNextHL7Type(type), settings), data[1]),
-      typeOfData: reqComponent('ED.2', 0, decodeMIMETypes, data[2]),
-      dataSubtype: optComponent('ED.3', 0, decodeSubtypeOfReferencedData, data[3]),
-      encoding: reqComponent('ED.4', 0, decodeEncoding, data[4]),
-      data: reqComponent('ED.5', 0, string, data[5]),
+      sourceApplication: optComponent('ED.1', 0, decodeHierarchicDesignator(getNextHL7Type(type), settings), data[0]),
+      typeOfData: reqComponent('ED.2', 0, decodeMIMETypes, data[1]),
+      dataSubtype: optComponent('ED.3', 0, decodeSubtypeOfReferencedData, data[2]),
+      encoding: reqComponent('ED.4', 0, decodeEncoding, data[3]),
+      data: reqComponent('ED.5', 0, string, data[4]),
     }),
   );

@@ -9,8 +9,8 @@ export const decodeStreetAddress = (type: HL7Type, settings: HL7Settings) =>
     type,
     settings,
     (data): StreetAddress => ({
-      streetOrMailingAddress: optComponent('SAD.1', 0, string, data[1]),
-      streetName: optComponent('SAD.2', 0, string, data[2]),
-      dwellingNumber: optComponent('SAD.3', 0, string, data[3]),
+      streetOrMailingAddress: optComponent('SAD.1', 0, string, data[0]),
+      streetName: optComponent('SAD.2', 0, string, data[1]),
+      dwellingNumber: optComponent('SAD.3', 0, string, data[2]),
     }),
   );
