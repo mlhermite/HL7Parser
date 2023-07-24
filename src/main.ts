@@ -13,6 +13,7 @@ const sqlClient = new Client({
   user: 'postgres',
   password: 'DK!TyBe85nMgN!is',
 });
+sqlClient.connect();
 
 const port = 10101;
 
@@ -22,8 +23,6 @@ sender.on('close', e => console.log('close, err :', e));
 sender.on('data', data => console.log('data', [data.toString()]));
 
 const server = createServer(async socket => {
-  await sqlClient.connect();
-
   console.log('client connected');
 
   socket.on('close', withError => {
