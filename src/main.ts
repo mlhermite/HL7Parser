@@ -27,6 +27,7 @@ const server = createServer(socket => {
       const response = DefaultOkResponse(request);
       await logMessage(JSON.stringify(response), 'response', request.MSH.messageControl);
       console.log([encodeHL7Message(response)]);
+      await new Promise(resolve => setTimeout(() => resolve(undefined), 1000));
       socket.write(encodeHL7Message(response), 'utf-8');
     });
   });
