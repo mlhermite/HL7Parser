@@ -20,10 +20,17 @@ export const handleADTRequest = async (request: ADTRequest, sqlClient: Client) =
   A01 Admit/Visit Notification => create patient
   A05 Pre-admit a patient => create patient
    */
+  console.log('event', event);
   if (event === 'A01' || event === 'A05') {
     const userValid = request.PID.identityReliabilityCode.reduce((acc, item) => item.identifier === 'VALI' || acc, false);
+    console.log('userValid', userValid);
     const ins = request.PID.patientIdentifierList.find(item => item.identifierTypeCode.startsWith('INS'))?.idNumber;
     const oid = request.PID.patientIdentifierList.find(item => item.identifierTypeCode.startsWith('PI'))?.idNumber;
+
+    if (!userValid || !ins || !oid) {
+      return 0;
+    }
+
     const birthName = find_patient_birth_name(request.PID.patientName);
     const displayName = find_patient_name(request.PID.patientName);
     const birth_lastname = birthName?.familyName;
@@ -34,9 +41,6 @@ export const handleADTRequest = async (request: ADTRequest, sqlClient: Client) =
     const birth_date = dateTimeFromFormats(request.PID.datetimeOfBirth as string, AcceptedDateTimeFormats)?.toSQLDate();
     const sex = request.PID.administrativeSex?.identifier;
     const birth_code = request.PID.birthPlace;
-    if (!userValid || !ins || !oid) {
-      return 0;
-    }
     await sqlClient.query(
       `INSERT INTO patients VALUES (
                              '${ins}',
