@@ -17,7 +17,7 @@ export const decodePatientIdentification = (settings: HL7Settings) =>
     'segment',
     settings,
     (data): PatientIdentification => ({
-      setId: reqComponent('PID.1', 0, float, data[1]),
+      setId: optComponent('PID.1', 0, float, data[1]),
       patientId: optComponent('PID.2', 0, string, data[2]),
       patientIdentifierList: listComponent(
         'PID.3',

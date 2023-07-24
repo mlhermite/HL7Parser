@@ -62,7 +62,7 @@ import { ExtendedAddress } from '../DataTypes/ExtendedAddress.ts';
  * </pre>
  */
 export type PatientIdentification = {
-  setId: number; //PID.1
+  setId?: number; //PID.1
   patientId?: string; //PID.2
   patientIdentifierList: ExtendedCompositeIdWithCheckDigit[]; //PID.3
   alternatePatientId?: string; //PID.4
