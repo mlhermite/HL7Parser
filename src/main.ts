@@ -23,9 +23,9 @@ const server = createServer(socket => {
     const requests = decodeHL7Message(data.toString());
 
     requests.map(async request => {
-      await logMessage(JSON.stringify(request), 'request', request.MSH.messageControl);
+      await logMessage(JSON.stringify(request, undefined, 2), 'request', request.MSH.messageControl);
       const response = DefaultOkResponse(request);
-      await logMessage(JSON.stringify(response), 'response', request.MSH.messageControl);
+      await logMessage(JSON.stringify(response, undefined, 2), 'response', request.MSH.messageControl);
       console.log([encodeHL7Message(response)]);
       await new Promise(resolve => setTimeout(() => resolve(undefined), 1000));
       socket.write(encodeHL7Message(response), 'utf-8');
