@@ -7,15 +7,14 @@ import { decodeADT_A47 } from './Events/DecodeADT_A47.ts';
 import { decodeADT_A28 } from './Events/DecodeADT_A28.ts';
 import { decodeADT_A01 } from './Events/DecodeADT_A01.ts';
 import { decodeADT_A05 } from './Events/DecodeADT_A05.ts';
+import { HL7Request } from '../Types/Request.ts';
 
-const decodeHL7Request = (value: unknown) => {
+const decodeHL7Request = (value: unknown): HL7Request => {
   const strValue = string(value);
   const data = strValue.split(eventRegex);
   const MSH = decodeRequiredSegment('MSH', decodeMessageHeader, data);
   const settings = settingsFromMSH(MSH);
   switch (MSH.messageType.messageCode) {
-    case 'ACK':
-      return decodeACK(MSH, data, settings);
     case 'ADT': {
       switch (MSH.messageType.triggerEvent) {
         case 'A01':
