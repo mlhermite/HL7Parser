@@ -1,5 +1,5 @@
 import { HL7Settings, settingsToHeader } from '../../utils/HL7Settings.ts';
-import { arrayWithContext, listComponent, optComponent, reqComponent } from '../../utils/DecoderUtils.ts';
+import { arrayWithContext, float, listComponent, optComponent, reqComponent } from '../../utils/DecoderUtils.ts';
 import { decodeCodedWithExceptions } from '../DataTypes/DecodeCodedWithExceptions.ts';
 import { number, string } from 'typescript-json-decoder';
 import { decodeHierarchicDesignator } from '../DataTypes/DecodeHierarchicDesignator.ts';
@@ -45,7 +45,7 @@ export const decodeMessageHeader = (value: unknown) => {
       messageControl: reqComponent('MSH.10', 0, string, data[9]),
       processingID: reqComponent('MSH.11', 0, decodeProcessingType('component', settings), data[10]),
       versionID: reqComponent('MSH.12', 0, decodeVersionIdentifier('component', settings), data[11]),
-      sequenceNumber: optComponent('MSH.13', 0, number, data[12]),
+      sequenceNumber: optComponent('MSH.13', 0, float, data[12]),
       continuationPointer: optComponent('MSH.14', 0, string, data[13]),
       acceptAcknowledgmentType: optComponent('MSH.15', 0, decodeAcknowledgmentConditions, data[14]),
       applicationAcknowledgmentType: optComponent('MSH.16', 0, decodeAcknowledgmentConditions, data[15]),

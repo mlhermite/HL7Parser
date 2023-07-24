@@ -1,5 +1,5 @@
 import { HL7Settings } from '../../utils/HL7Settings.ts';
-import { arrayWithContext, listComponent, optComponent, reqComponent } from '../../utils/DecoderUtils.ts';
+import { arrayWithContext, float, listComponent, optComponent, reqComponent } from '../../utils/DecoderUtils.ts';
 import { PatientVisit } from '../../Types/Segments/PatientVisit.ts';
 import { number, string } from 'typescript-json-decoder';
 import { decodeCodedWithExceptions } from '../DataTypes/DecodeCodedWithExceptions.ts';
@@ -42,14 +42,14 @@ export const decodePatientVisit = (settings: HL7Settings) =>
       creditRating: optComponent('PV1.23', 0, decodeCodedWithExceptions('component', settings), data[23]),
       contractCode: listComponent('PV1.24', decodeCodedWithExceptions('component', settings), 'infinite', false, data[24], settings),
       contractEffectiveDate: listComponent('PV1.25', decodeDatetime, 'infinite', false, data[25], settings),
-      contractAmount: listComponent('PV1.26', number, 'infinite', false, data[26], settings),
-      contractPeriod: listComponent('PV1.27', number, 'infinite', false, data[27], settings),
+      contractAmount: listComponent('PV1.26', float, 'infinite', false, data[26], settings),
+      contractPeriod: listComponent('PV1.27', float, 'infinite', false, data[27], settings),
       interestCode: optComponent('PV1.28', 0, decodeCodedWithExceptions('component', settings), data[28]),
       transferToBadDebtCode: optComponent('PV1.29', 0, decodeCodedWithExceptions('component', settings), data[29]),
       transferToBadDebtDate: optComponent('PV1.30', 0, decodeDateValue, data[30]),
       badDebtAgencyCode: optComponent('PV1.31', 0, decodeCodedWithExceptions('component', settings), data[31]),
-      badDebtTransferAmount: optComponent('PV1.32', 0, number, data[32]),
-      badDebtRecoveryAmount: optComponent('PV1.33', 0, number, data[33]),
+      badDebtTransferAmount: optComponent('PV1.32', 0, float, data[32]),
+      badDebtRecoveryAmount: optComponent('PV1.33', 0, float, data[33]),
       deleteAccountIndicator: optComponent('PV1.34', 0, decodeCodedWithExceptions('component', settings), data[34]),
       deleteAccountDate: optComponent('PV1.35', 0, decodeDateValue, data[35]),
       dischargeDisposition: optComponent('PV1.36', 0, decodeCodedWithExceptions('component', settings), data[36]),
@@ -62,10 +62,10 @@ export const decodePatientVisit = (settings: HL7Settings) =>
       priorTemporaryLocation: optComponent('PV1.43', 0, decodePersonLocation('component', settings), data[43]),
       admitDatetime: optComponent('PV1.44', 0, decodeDatetime, data[44]),
       dischargeDatetime: optComponent('PV1.45', 0, decodeDatetime, data[45]),
-      currentPatientBalance: optComponent('PV1.46', 0, number, data[46]),
-      totalCharges: optComponent('PV1.47', 0, number, data[47]),
-      totalAdjustments: optComponent('PV1.48', 0, number, data[48]),
-      totalPayments: optComponent('PV1.49', 0, number, data[49]),
+      currentPatientBalance: optComponent('PV1.46', 0, float, data[46]),
+      totalCharges: optComponent('PV1.47', 0, float, data[47]),
+      totalAdjustments: optComponent('PV1.48', 0, float, data[48]),
+      totalPayments: optComponent('PV1.49', 0, float, data[49]),
       alternateVisitId: optComponent('PV1.50', 0, decodeExtendedCompositeIdWithCheckDigit('component', settings), data[50]),
       visitIndicator: optComponent('PV1.51', 0, decodeCodedWithExceptions('component', settings), data[51]),
       otherHealthcareProvider: optComponent('PV1.52', 0, string, data[52]),

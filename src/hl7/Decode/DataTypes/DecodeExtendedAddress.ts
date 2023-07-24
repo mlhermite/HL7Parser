@@ -1,5 +1,5 @@
 import { getNextHL7Type, HL7Settings, HL7Type } from '../../utils/HL7Settings.ts';
-import { arrayWithContext, optComponent } from '../../utils/DecoderUtils.ts';
+import { arrayWithContext, float, optComponent } from '../../utils/DecoderUtils.ts';
 import { ExtendedAddress } from '../../Types/DataTypes/ExtendedAddress.ts';
 import { decodeEntityIdentifier } from './DecodeEntityIdentifier.ts';
 import { number, string } from 'typescript-json-decoder';
@@ -38,7 +38,7 @@ export const decodeExtendedAddress = (type: HL7Type, settings: HL7Settings) =>
       addressUsage: optComponent('XAD.18', 0, decodeAddressUsage, data[18]),
       addressee: optComponent('XAD.19', 0, string, data[19]),
       comment: optComponent('XAD.20', 0, string, data[20]),
-      preferenceOrder: optComponent('XAD.21', 0, number, data[21]),
+      preferenceOrder: optComponent('XAD.21', 0, float, data[21]),
       protectionCode: optComponent('XAD.22', 0, decodeCodedWithExceptions(getNextHL7Type(type), settings), data[22]),
       addressIdentifier: optComponent('XAD.23', 0, decodeEntityIdentifier(getNextHL7Type(type), settings), data[23]),
     }),

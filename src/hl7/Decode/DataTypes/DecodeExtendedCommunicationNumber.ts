@@ -1,5 +1,5 @@
 import { getNextHL7Type, HL7Settings, HL7Type } from '../../utils/HL7Settings.ts';
-import { arrayWithContext, optComponent, reqComponent } from '../../utils/DecoderUtils.ts';
+import { arrayWithContext, float, optComponent, reqComponent } from '../../utils/DecoderUtils.ts';
 import { number, string } from 'typescript-json-decoder';
 import { decodeDatetime } from '../Tables/DecodeDatetime.ts';
 import { decodeCodedWithExceptions } from './DecodeCodedWithExceptions.ts';
@@ -31,6 +31,6 @@ export const decodeExtendedCommunicationNumber = (type: HL7Type, settings: HL7Se
       expirationReason: optComponent('XTN.15', 0, decodeCodedWithExceptions(getNextHL7Type(type), settings), data[15]),
       protectionCode: optComponent('XTN.16', 0, decodeCodedWithExceptions(getNextHL7Type(type), settings), data[16]),
       sharedTelecommunicationIdentifier: optComponent('XTN.17', 0, decodeEntityIdentifier(getNextHL7Type(type), settings), data[17]),
-      preferenceOrder: optComponent('XTN.18', 0, number, data[18]),
+      preferenceOrder: optComponent('XTN.18', 0, float, data[18]),
     }),
   );

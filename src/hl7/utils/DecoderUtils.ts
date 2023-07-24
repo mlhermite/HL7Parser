@@ -1,53 +1,34 @@
-import {
-  array,
-  boolean,
-  DecoderFunction,
-  field,
-  string,
-  union,
-} from "typescript-json-decoder";
-import { tag } from "typescript-json-decoder/dist/utils";
-import { fieldDecoder } from "typescript-json-decoder/dist/literal-decoders";
-import { HL7Settings, HL7Type, split } from "./HL7Settings.ts";
+import { array, boolean, DecoderFunction, field, string, union } from 'typescript-json-decoder';
+import { tag } from 'typescript-json-decoder/dist/utils';
+import { fieldDecoder } from 'typescript-json-decoder/dist/literal-decoders';
+import { HL7Settings, HL7Type, split } from './HL7Settings.ts';
 
 const wrapErrorWithContext = (context: string, e: unknown) => {
-  if (typeof e === "string") {
-    e.replace(/\\t+/g, "$&\t");
+  if (typeof e === 'string') {
+    e.replace(/\\t+/g, '$&\t');
     return `While decoding ${context} : \n\t${e}`;
   } else {
     return e;
   }
 };
 
-export const reqComponent = <T>(
-  name: string,
-  maxLength: number,
-  decoder: DecoderFunction<T>,
-  value: unknown,
-): T => {
+export const reqComponent = <T>(name: string, maxLength: number, decoder: DecoderFunction<T>, value: unknown): T => {
   try {
     const strValue = string(value);
-    if (maxLength && strValue.length > maxLength)
-      throw `Value ${name} exceeds max length (${strValue.length} / ${maxLength}): ${strValue}`;
+    if (maxLength && strValue.length > maxLength) throw `Value ${name} exceeds max length (${strValue.length} / ${maxLength}): ${strValue}`;
     return decoder(strValue);
   } catch (e) {
     throw wrapErrorWithContext(name, e);
   }
 };
 
-export const optComponent = <T>(
-  name: string,
-  maxLength: number,
-  decoder: DecoderFunction<T>,
-  value: unknown,
-): T | undefined => {
+export const optComponent = <T>(name: string, maxLength: number, decoder: DecoderFunction<T>, value: unknown): T | undefined => {
   try {
     const strValue = opt(string)(value);
     if (strValue === undefined) {
       return undefined;
     }
-    if (maxLength && strValue.length > maxLength)
-      throw `Value ${name} exceeds max length (${strValue.length} / ${maxLength}): ${strValue}`;
+    if (maxLength && strValue.length > maxLength) throw `Value ${name} exceeds max length (${strValue.length} / ${maxLength}): ${strValue}`;
     return decoder(strValue);
   } catch (e) {
     throw wrapErrorWithContext(name, e);
@@ -57,7 +38,7 @@ export const optComponent = <T>(
 export const listComponent = <T>(
   name: string,
   decoder: DecoderFunction<T>,
-  repeat: "infinite" | number,
+  repeat: 'infinite' | number,
   required: boolean,
   value: unknown,
   settings: HL7Settings,
@@ -67,8 +48,8 @@ export const listComponent = <T>(
     if (strValue === undefined) {
       return [];
     }
-    const strList = split("list", settings, strValue);
-    if (typeof repeat === "number" && strList.length > repeat) {
+    const strList = split('list', settings, strValue);
+    if (typeof repeat === 'number' && strList.length > repeat) {
       throw `Too many repeated items provided for ${name}: ${strList.length} / ${repeat}`;
     }
     return strList.map(decoder);
@@ -77,13 +58,30 @@ export const listComponent = <T>(
   }
 };
 
-export const stringUnion = <T extends string = "">(...values: T[]) =>
-  union(...values);
+export const stringUnion = <T extends string = ''>(...values: T[]) => union(...values);
+
+export const integer = (value: unknown) => {
+  const strValue = string(value);
+  const num = parseInt(strValue);
+  if (isNaN(num)) {
+    throw `The value ${strValue} is not of type integer`;
+  }
+  return num;
+};
+
+export const float = (value: unknown) => {
+  const strValue = string(value);
+  const num = parseFloat(strValue);
+  if (isNaN(num)) {
+    throw `The value ${strValue} is not of type float`;
+  }
+  return num;
+};
 
 export const stringUnionMapUndef =
-  <T extends string = "">(undefinedValue: string, ...values: T[]) =>
+  <T extends string = ''>(undefinedValue: string, ...values: T[]) =>
   (value: unknown) => {
-    if (typeof value === "string" && value === undefinedValue) {
+    if (typeof value === 'string' && value === undefinedValue) {
       return undefined;
     } else {
       return stringUnion(...values)(value);
@@ -93,20 +91,17 @@ export const stringUnionMapUndef =
 export const opt =
   <T>(decoder: DecoderFunction<T>): DecoderFunction<T | undefined> =>
   (value: unknown) => {
-    if (value === null || value === undefined || value === "") {
+    if (value === null || value === undefined || value === '') {
       return undefined;
     }
     return decoder(value);
   };
-export const deepField = <T>(
-  key: string,
-  decoder: DecoderFunction<T>,
-): DecoderFunction<T> => {
+export const deepField = <T>(key: string, decoder: DecoderFunction<T>): DecoderFunction<T> => {
   const newDecoder = (value: unknown): T => {
-    const keys = key.split(".");
+    const keys = key.split('.');
     let parsedValue: unknown = value;
     for (let i = 0; i < keys.length; i++) {
-      parsedValue = field(keys[i], (v) => v)(parsedValue);
+      parsedValue = field(keys[i], v => v)(parsedValue);
     }
 
     return decoder(parsedValue);
@@ -115,16 +110,10 @@ export const deepField = <T>(
   return newDecoder;
 };
 
-export const forcedBoolean = (value: unknown) =>
-  value !== undefined && value !== null && boolean(value);
+export const forcedBoolean = (value: unknown) => value !== undefined && value !== null && boolean(value);
 
 export const arrayWithContext =
-  <T extends object>(
-    context: string,
-    type: HL7Type,
-    settings: HL7Settings,
-    fn: (data: unknown[], originalData: string) => T,
-  ): DecoderFunction<T> =>
+  <T extends object>(context: string, type: HL7Type, settings: HL7Settings, fn: (data: unknown[], originalData: string) => T): DecoderFunction<T> =>
   (value: unknown) => {
     try {
       const strValue = string(value);
@@ -142,42 +131,28 @@ export const repeatable =
     if (!strValue) {
       return [];
     }
-    const data = split("list", settings, strValue);
+    const data = split('list', settings, strValue);
     return array(decoder)(data);
   };
 
-export const decodeRequiredSegment = <T>(
-  segmentName: string,
-  decoder: DecoderFunction<T>,
-  data: string[],
-): T => {
-  const line = data.find((line) => line.startsWith(segmentName));
+export const decodeRequiredSegment = <T>(segmentName: string, decoder: DecoderFunction<T>, data: string[]): T => {
+  const line = data.find(line => line.startsWith(segmentName));
   if (!line) {
-    throw `Missing ${segmentName}, not found in ${data.map((line) =>
-      line.slice(0, 4),
-    )}`;
+    throw `Missing ${segmentName}, not found in ${data.map(line => line.slice(0, 4))}`;
   }
   return decoder(line);
 };
 
-export const decodeSegment = <T>(
-  segmentName: string,
-  decoder: DecoderFunction<T>,
-  data: string[],
-): T | undefined => {
-  const line = data.find((line) => line.startsWith(segmentName));
+export const decodeSegment = <T>(segmentName: string, decoder: DecoderFunction<T>, data: string[]): T | undefined => {
+  const line = data.find(line => line.startsWith(segmentName));
   if (!line) {
     return undefined;
   }
   return decoder(line);
 };
 
-export const decodeRepeatableSegment = <T>(
-  segmentName: string,
-  decoder: DecoderFunction<T>,
-  data: string[],
-): T[] => {
-  const lines = data.filter((line) => line.startsWith(segmentName));
+export const decodeRepeatableSegment = <T>(segmentName: string, decoder: DecoderFunction<T>, data: string[]): T[] => {
+  const lines = data.filter(line => line.startsWith(segmentName));
   if (!lines) {
     return [];
   }

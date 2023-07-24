@@ -1,5 +1,5 @@
 import { HL7Settings } from '../../utils/HL7Settings.ts';
-import { arrayWithContext, listComponent, optComponent, reqComponent } from '../../utils/DecoderUtils.ts';
+import { arrayWithContext, float, listComponent, optComponent, reqComponent } from '../../utils/DecoderUtils.ts';
 import { PatientIdentification } from '../../Types/Segments/PatientIdentification.ts';
 import { number, string } from 'typescript-json-decoder';
 import { decodeCodedWithExceptions } from '../DataTypes/DecodeCodedWithExceptions.ts';
@@ -17,7 +17,7 @@ export const decodePatientIdentification = (settings: HL7Settings) =>
     'segment',
     settings,
     (data): PatientIdentification => ({
-      setId: reqComponent('PID.1', 0, number, data[1]),
+      setId: reqComponent('PID.1', 0, float, data[1]),
       patientId: optComponent('PID.2', 0, string, data[2]),
       patientIdentifierList: listComponent(
         'PID.3',
@@ -55,7 +55,7 @@ export const decodePatientIdentification = (settings: HL7Settings) =>
       ethnicGroup: listComponent('PID.22', decodeCodedWithExceptions('component', settings), 'infinite', false, data[22], settings),
       birthPlace: optComponent('PID.23', 0, string, data[23]),
       multipleBirthIndicator: optComponent('PID.24', 0, decodeYesNoIndicator, data[24]),
-      birthOrder: optComponent('PID.25', 0, number, data[25]),
+      birthOrder: optComponent('PID.25', 0, float, data[25]),
       citizenship: listComponent('PID.26', decodeCodedWithExceptions('component', settings), 'infinite', false, data[26], settings),
       veteransMilitaryStatus: optComponent('PID.27', 0, decodeCodedWithExceptions('component', settings), data[27]),
       nationality: optComponent('PID.28', 0, string, data[28]),
