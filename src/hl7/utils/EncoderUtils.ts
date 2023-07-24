@@ -1,7 +1,15 @@
-import { encodeString } from '../Encode/Values/EncodeString.ts';
 import { HL7Settings, HL7Type } from './HL7Settings.ts';
 
-export const makeComponent = (sep: string, ...values: (string | undefined)[]): string => values.map(v => v ?? '').join(sep);
+export const makeComponent = (sep: string, ...values: (string | undefined)[]): string =>
+  values
+    .map(v => v ?? '')
+    .reduceRight((acc, value) => {
+      if (acc.length > 0 || value !== '') {
+        acc.unshift(value);
+      }
+      return acc;
+    }, [] as string[])
+    .join(sep);
 
 export const encodeList = <T>(
   values: T[] | undefined,

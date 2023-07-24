@@ -16,7 +16,7 @@ export const DefaultOkResponse = (request: { MSH: MessageHeader }): ACK => ({
     },
     processingID: { processingId: 'P' },
     versionID: { versionId: '2.5' },
-    messageControl: DateTime.now().toFormat(DateFormat),
+    messageControl: request.MSH.messageControl,
     characterSet: [],
   },
   MSA: {
