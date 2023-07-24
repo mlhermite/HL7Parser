@@ -6,5 +6,5 @@ const encodeHL7Request = (ACK: ACK) => {
 };
 
 export const encodeHL7Message = (ACK: ACK) => {
-  return `\v${encodeHL7Request(ACK)}\x1C\\r`;
+  return `\v${encodeHL7Request(ACK)}\x1C\r`;
 };

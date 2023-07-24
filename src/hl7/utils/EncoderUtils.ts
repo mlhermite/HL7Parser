@@ -1,5 +1,7 @@
 import { HL7Settings, HL7Type } from './HL7Settings.ts';
 
+export const makeSegment = (...values: (string | undefined)[]): string => values.map(v => (v ? `${v}\r` : '')).join();
+
 export const makeComponent = (sep: string, ...values: (string | undefined)[]): string =>
   values
     .map(v => v ?? '')
