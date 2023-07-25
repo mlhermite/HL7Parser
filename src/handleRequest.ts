@@ -65,6 +65,7 @@ const create_or_update_patient = async (request: ADTCreationRequest, sqlClient: 
         );
         return result.rowCount;
     } catch (_) {
+        console.log('update');
         const result = await sqlClient.query(
             `UPDATE patients SET 
                               birth_lastname='${birth_lastname}',
