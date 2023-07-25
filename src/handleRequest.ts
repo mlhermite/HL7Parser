@@ -45,7 +45,9 @@ const create_or_update_patient = async (request: ADTCreationRequest, sqlClient: 
     const birth_firstnames = birthName?.secondAndFurtherNames;
     const first_firstname = birthName?.givenName;
     const used_firstname = displayName?.givenName;
-    const birth_date = dateTimeFromFormats(request.PID.datetimeOfBirth as string, AcceptedDateTimeFormats)?.toSQLDate();
+    const birth_date = request.PID.datetimeOfBirth
+        ? dateTimeFromFormats(request.PID.datetimeOfBirth, AcceptedDateTimeFormats)?.toSQLDate()
+        : undefined;
     const sex = request.PID.administrativeSex?.identifier;
     const birth_code = find_patient_birth_place(request.PID.patientAddress)?.countyCode?.identifier;
     try {

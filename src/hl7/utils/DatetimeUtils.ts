@@ -27,7 +27,6 @@ export const dateTimeFromFormats = (value: string, formats: string[]): DateTime 
     let i = 0;
     let len = formats.length;
     while ((!datetime || !datetime.isValid) && i < len) {
-        console.log('fromFormat', value, formats[i]);
         datetime = DateTime.fromFormat(value, formats[i]);
         i += 1;
     }
