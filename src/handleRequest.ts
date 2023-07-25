@@ -3,7 +3,6 @@ import { Client } from 'pg';
 import { AcceptedDateTimeFormats, dateTimeFromFormats } from './hl7/utils/DatetimeUtils.ts';
 import { ExtendedPersonName } from './hl7/Types/DataTypes/ExtendedPersonName.ts';
 import { ExtendedAddress } from './hl7/Types/DataTypes/ExtendedAddress.ts';
-import { undef } from 'typescript-json-decoder';
 
 export const handleRequest = (request: HL7Request, sqlClient: Client) => {
     switch (request.MSH.messageType.messageCode) {
@@ -40,8 +39,8 @@ const create_or_update_patient = async (request: ADTCreationRequest, sqlClient: 
 
     const birthName = find_patient_birth_name(request.PID.patientName);
     const displayName = find_patient_name(request.PID.patientName);
-    const birth_lastname = birthName?.familyName;
-    const used_lastname = displayName?.familyName;
+    const birth_lastname = birthName?.familyName.surname;
+    const used_lastname = displayName?.familyName.surname;
     const birth_firstnames = birthName?.secondAndFurtherNames;
     const first_firstname = birthName?.givenName;
     const used_firstname = displayName?.givenName;
