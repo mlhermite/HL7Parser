@@ -48,7 +48,7 @@ const create_or_update_patient = async (request: ADTCreationRequest, sqlClient: 
     const sex = request.PID.administrativeSex?.identifier;
     const birth_code = find_patient_birth_place(request.PID.patientAddress)?.countyCode?.identifier;
     try {
-        await sqlClient.query(
+        const result = await sqlClient.query(
             `INSERT INTO patients VALUES (
                              '${ins}',
                              '${oid}',
@@ -62,8 +62,9 @@ const create_or_update_patient = async (request: ADTCreationRequest, sqlClient: 
                              '${birth_code}'
                         );`,
         );
+        return result.rowCount;
     } catch (_) {
-        await sqlClient.query(
+        const result = await sqlClient.query(
             `UPDATE patients SET 
                               birth_lastname='${birth_lastname}',
                               used_lastname='${used_lastname}',
@@ -77,11 +78,17 @@ const create_or_update_patient = async (request: ADTCreationRequest, sqlClient: 
                               oid='${oid}' AND ins='${ins}'
         `,
         );
+        return result.rowCount;
     }
 };
 
 const delete_patient = async (request: ADTDeleteRequest, sqlClient: Client) => {
-    await sqlClient.query(`DELETE FROM patients WHERE ins=${request.MRG.priorPatientId}`);
+    const insToDelete = request.MRG.priorPatientIdentifierList.find(item => item.identifierTypeCode.startsWith('INS'))?.idNumber;
+    if (insToDelete) {
+        await sqlClient.query(`DELETE FROM patients WHERE ins=${insToDelete}`);
+        return 1;
+    }
+    return 0;
 };
 
 const find_patient_birth_name = (names: ExtendedPersonName[] | undefined): ExtendedPersonName | undefined => {
