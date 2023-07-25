@@ -1,34 +1,41 @@
-import { ADTRequest, HL7Request } from './hl7/Types/Request.ts';
+import { ADTCreationRequest, ADTDeleteRequest, ADTRequest, HL7Request } from './hl7/Types/Request.ts';
 import { Client } from 'pg';
 import { AcceptedDateTimeFormats, dateTimeFromFormats } from './hl7/utils/DatetimeUtils.ts';
 import { ExtendedPersonName } from './hl7/Types/DataTypes/ExtendedPersonName.ts';
-import { DateTime } from 'luxon';
-import { Datetime } from './hl7/Types/Tables/Datetime.ts';
+import { ExtendedAddress } from './hl7/Types/DataTypes/ExtendedAddress.ts';
+import { undef } from 'typescript-json-decoder';
 
 export const handleRequest = (request: HL7Request, sqlClient: Client) => {
-  switch (request.MSH.messageType.messageCode) {
-    case 'ADT':
-      return handleADTRequest(request, sqlClient);
-    default:
-      throw new Error('Not implemented');
-  }
+    switch (request.MSH.messageType.messageCode) {
+        case 'ADT':
+            return handleADTRequest(request, sqlClient);
+        default:
+            throw new Error('Not implemented');
+    }
 };
 
 export const handleADTRequest = async (request: ADTRequest, sqlClient: Client) => {
-  const event = request.MSH.messageType.triggerEvent;
-  /*
+    const event = request.MSH.messageType.triggerEvent;
+    /*
   A01 Admit/Visit Notification => create patient
   A05 Pre-admit a patient => create patient
+  A28 Create New Patient => create patient
    */
-  console.log('event', event);
-  if (event === 'A01' || event === 'A05') {
+    console.log('event', event);
+    if (event in { A01: undefined, A05: undefined, A28: undefined }) {
+        return create_or_update_patient(request as ADTCreationRequest, sqlClient);
+    } else if (event in { A47: undefined }) {
+        return delete_patient(request as ADTDeleteRequest, sqlClient);
+    }
+};
+
+const create_or_update_patient = async (request: ADTCreationRequest, sqlClient: Client) => {
     const userValid = request.PID.identityReliabilityCode.reduce((acc, item) => item.identifier === 'VALI' || acc, false);
-    console.log('userValid', userValid);
     const ins = request.PID.patientIdentifierList.find(item => item.identifierTypeCode.startsWith('INS'))?.idNumber;
     const oid = request.PID.patientIdentifierList.find(item => item.identifierTypeCode.startsWith('PI'))?.idNumber;
 
     if (!userValid || !ins || !oid) {
-      return 0;
+        return 0;
     }
 
     const birthName = find_patient_birth_name(request.PID.patientName);
@@ -40,9 +47,10 @@ export const handleADTRequest = async (request: ADTRequest, sqlClient: Client) =
     const used_firstname = displayName?.givenName;
     const birth_date = dateTimeFromFormats(request.PID.datetimeOfBirth as string, AcceptedDateTimeFormats)?.toSQLDate();
     const sex = request.PID.administrativeSex?.identifier;
-    const birth_code = request.PID.birthPlace;
-    await sqlClient.query(
-      `INSERT INTO patients VALUES (
+    const birth_code = find_patient_birth_place(request.PID.patientAddress)?.countyCode?.identifier;
+    try {
+        await sqlClient.query(
+            `INSERT INTO patients VALUES (
                              '${ins}',
                              '${oid}',
                              '${birth_lastname}', 
@@ -54,14 +62,37 @@ export const handleADTRequest = async (request: ADTRequest, sqlClient: Client) =
                              '${sex}',
                              '${birth_code}'
                         );`,
-    );
-  }
+        );
+    } catch (_) {
+        await sqlClient.query(
+            `UPDATE patients SET 
+                              birth_lastname='${birth_lastname}',
+                              used_lastname='${used_lastname}',
+                              birth_firstname='${birth_firstnames}',
+                              first_firstname='${first_firstname}',
+                              used_firstname='${used_firstname}',
+                              birth_date='${birth_date}',
+                              sex='${sex}',
+                              birth_code='${birth_code}'
+                         WHERE
+                              oid='${oid}' AND ins='${ins}'
+        `,
+        );
+    }
+};
+
+const delete_patient = async (request: ADTDeleteRequest, sqlClient: Client) => {
+    await sqlClient.query(`DELETE FROM patients WHERE ins=${request.MRG.priorPatientId}`);
 };
 
 const find_patient_birth_name = (names: ExtendedPersonName[] | undefined): ExtendedPersonName | undefined => {
-  return names?.find(name => name.nameTypeCode === 'L');
+    return names?.find(name => name.nameTypeCode === 'L');
 };
 
 const find_patient_name = (names: ExtendedPersonName[] | undefined): ExtendedPersonName | undefined => {
-  return names?.find(name => name.nameTypeCode === 'D') ?? find_patient_birth_name(names);
+    return names?.find(name => name.nameTypeCode === 'D') ?? find_patient_birth_name(names);
+};
+
+const find_patient_birth_place = (addresses: ExtendedAddress[] | undefined): ExtendedAddress | undefined => {
+    return addresses?.find(address => address.addressType === 'BDL');
 };

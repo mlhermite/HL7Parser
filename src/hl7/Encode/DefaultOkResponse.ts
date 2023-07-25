@@ -5,24 +5,28 @@ import { DateFormat } from '../utils/DatetimeUtils.ts';
 import { Datetime } from '../Types/Tables/Datetime.ts';
 
 export const DefaultOkResponse = (request: { MSH: MessageHeader }): ACK => ({
-  MSH: {
-    fieldSeparator: '|',
-    encodingCharacters: '^~\\&',
-    datetimeOfMessage: DateTime.now().toFormat(DateFormat) as Datetime,
-    messageType: {
-      messageCode: 'ACK',
-      messageStructure: 'ACK',
-      triggerEvent: 'A01',
+    MSH: {
+        fieldSeparator: '|',
+        encodingCharacters: '^~\\&',
+        sendingApplication: request.MSH.receivingApplication,
+        sendingFacility: request.MSH.receivingFacility,
+        receivingApplication: request.MSH.sendingApplication,
+        receivingFacility: request.MSH.sendingFacility,
+        datetimeOfMessage: DateTime.now().toFormat(DateFormat) as Datetime,
+        messageType: {
+            messageCode: 'ACK',
+            messageStructure: 'ACK',
+            triggerEvent: request.MSH.messageType.triggerEvent,
+        },
+        processingID: request.MSH.processingID,
+        versionID: request.MSH.versionID,
+        messageControl: DateTime.now().toFormat(DateFormat),
+        characterSet: [],
     },
-    processingID: { processingId: 'P' },
-    versionID: { versionId: '2.5' },
-    messageControl: DateTime.now().toFormat(DateFormat),
-    characterSet: [],
-  },
-  MSA: {
-    acknowledgmentCode: 'AA',
-    messageControlId: request.MSH.messageControl,
-  },
-  SFT: [],
-  ERR: [],
+    MSA: {
+        acknowledgmentCode: 'AA',
+        messageControlId: request.MSH.messageControl,
+    },
+    SFT: [],
+    ERR: [],
 });
