@@ -85,7 +85,7 @@ const create_or_update_patient = async (request: ADTCreationRequest, sqlClient: 
 const delete_patient = async (request: ADTDeleteRequest, sqlClient: Client) => {
     const insToDelete = request.MRG.priorPatientIdentifierList.find(item => item.identifierTypeCode.startsWith('INS'))?.idNumber;
     if (insToDelete) {
-        await sqlClient.query(`DELETE FROM patients WHERE ins=${insToDelete}`);
+        await sqlClient.query(`DELETE FROM patients WHERE ins='${insToDelete}'`);
         return 1;
     }
     return 0;
