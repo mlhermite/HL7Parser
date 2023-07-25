@@ -19,9 +19,10 @@ export const handleADTRequest = async (request: ADTRequest, sqlClient: Client) =
   A01 Admit/Visit Notification => create patient
   A05 Pre-admit a patient => create patient
   A28 Create New Patient => create patient
+  A31 Update person information => update patient
+  A47 Change Patient Identifier List => delete patient
    */
-    console.log('event', event);
-    if (event in { A01: undefined, A05: undefined, A28: undefined }) {
+    if (event in { A01: undefined, A05: undefined, A28: undefined, A31: undefined }) {
         return create_or_update_patient(request as ADTCreationRequest, sqlClient);
     } else if (event in { A47: undefined }) {
         return delete_patient(request as ADTDeleteRequest, sqlClient);

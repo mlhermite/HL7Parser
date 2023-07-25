@@ -12,15 +12,15 @@ import { HL7Settings } from '../../utils/HL7Settings.ts';
  *
  */
 export const decodeACK = (MSH: MessageHeader, data: string[], settings: HL7Settings): ACK => {
-  const MSA = decodeRequiredSegment('MSA', decodeMessageAcknowledgment(settings), data);
-  const SFT = decodeRepeatableSegment('SFT', decodeSoftwareSegment(settings), data);
-  const ERR = decodeRepeatableSegment('ERR', decodeErrorSegment(settings), data);
-  const UAC = decodeSegment('UAC', decodeUserAuthenticationCredentialSegment(settings), data);
-  return {
-    MSH,
-    SFT,
-    UAC,
-    MSA,
-    ERR,
-  };
+    const MSA = decodeRequiredSegment('MSA', decodeMessageAcknowledgment(settings), data);
+    const SFT = decodeRepeatableSegment('SFT', decodeSoftwareSegment(settings), data);
+    const ERR = decodeRepeatableSegment('ERR', decodeErrorSegment(settings), data);
+    const UAC = decodeSegment('UAC', decodeUserAuthenticationCredentialSegment(settings), data);
+    return {
+        MSH,
+        SFT,
+        UAC,
+        MSA,
+        ERR,
+    };
 };
