@@ -24,24 +24,24 @@ export const handleADTRequest = async (request: ADTRequest, sqlClient: Client) =
         A47 Change Patient Identifier List => delete patient
      */
     if (event in { A01: undefined, A05: undefined, A28: undefined, A31: undefined }) {
-        result = await create_or_update_patient(request as ADTCreationRequest, sqlClient);
+        result = await createOrUpdatePatient(request as ADTCreationRequest, sqlClient);
         console.log('Updated / created: ', result);
     } else if (event in { A47: undefined }) {
-        result = await delete_patient(request as ADTDeleteRequest, sqlClient);
+        result = await deleteINS(request as ADTDeleteRequest, sqlClient);
         console.log('Deleted: ', result);
     }
     return result;
 };
 
-const create_or_update_patient = async (request: ADTCreationRequest, sqlClient: Client) => {
-    const userValid = request.PID.identityReliabilityCode.reduce((acc, item) => item.identifier === 'VALI' || acc, false);
-    const ins = request.PID.patientIdentifierList.find(item => item.identifierTypeCode.startsWith('INS'))?.idNumber;
+const createOrUpdatePatient = async (request: ADTCreationRequest, sqlClient: Client) => {
     const oid = request.PID.patientIdentifierList.find(item => item.identifierTypeCode.startsWith('PI'))?.idNumber;
 
-    if (!userValid || !ins || !oid) {
+    if (!oid) {
         return 0;
     }
 
+    const insValid = request.PID.identityReliabilityCode.reduce((acc, item) => item.identifier === 'VALI' || acc, false);
+    const ins = insValid ? request.PID.patientIdentifierList.find(item => item.identifierTypeCode.startsWith('INS'))?.idNumber : undefined;
     const birthName = findPatientBirthName(request.PID.patientName) ?? null;
     const displayName = findPatientName(request.PID.patientName) ?? null;
     const birth_lastname = birthName?.familyName.surname ?? null;
@@ -55,8 +55,8 @@ const create_or_update_patient = async (request: ADTCreationRequest, sqlClient: 
     const birth_code = findPatientBirthPlace(request.PID.patientAddress)?.countyCode?.identifier ?? null;
     try {
         const result = await sqlClient.query(`INSERT INTO patients VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);`, [
-            ins,
             oid,
+            ins,
             birth_lastname,
             used_lastname,
             birth_firstnames,
@@ -69,31 +69,41 @@ const create_or_update_patient = async (request: ADTCreationRequest, sqlClient: 
         return result.rowCount;
     } catch (_) {
         const result = await sqlClient.query(
-            `UPDATE patients SET 
-                              birth_lastname=$3,
-                              used_lastname=$4,
-                              birth_firstname=$5,
-                              first_firstname=$6,
-                              used_firstname=$7,
-                              birth_date=$8,
-                              sex=$9,
-                              birth_code=$10
-                         WHERE
-                              oid=$2 AND ins=$1
+            `UPDATE patients SET
+                               ins=$2
+                               birth_lastname=$3,
+                               used_lastname=$4,
+                               birth_firstname=$5,
+                               first_firstname=$6,
+                               used_firstname=$7,
+                               birth_date=$8,
+                               sex=$9,
+                               birth_code=$10
+                             WHERE
+                               oid=$1 
         `,
-            [ins, oid, birth_lastname, used_lastname, birth_firstnames, first_firstname, used_firstname, birth_date, sex, birth_code],
+            [oid, ins, birth_lastname, used_lastname, birth_firstnames, first_firstname, used_firstname, birth_date, sex, birth_code],
         );
         return result.rowCount;
     }
 };
 
-const delete_patient = async (request: ADTDeleteRequest, sqlClient: Client) => {
+const deleteINS = async (request: ADTDeleteRequest, sqlClient: Client) => {
+    const oid = request.PID.patientIdentifierList.find(item => item.identifierTypeCode.startsWith('PI'))?.idNumber;
     const insToDelete = request.MRG.priorPatientIdentifierList.find(item => item.identifierTypeCode.startsWith('INS'))?.idNumber;
-    if (insToDelete) {
-        await sqlClient.query(`DELETE FROM patients WHERE ins=$1`, [insToDelete]);
-        return 1;
+
+    if (!oid || !insToDelete) {
+        return 0;
     }
-    return 0;
+
+    const result = await sqlClient.query(
+        `UPDATE patients SET
+                           ins=null
+                         WHERE
+                           oid=$1 `,
+        [oid],
+    );
+    return result.rowCount;
 };
 
 const findPatientBirthName = (names: ExtendedPersonName[] | undefined): ExtendedPersonName | undefined => {
@@ -107,5 +117,3 @@ const findPatientName = (names: ExtendedPersonName[] | undefined): ExtendedPerso
 const findPatientBirthPlace = (addresses: ExtendedAddress[] | undefined): ExtendedAddress | undefined => {
     return addresses?.find(address => address.addressType === 'BDL');
 };
-
-const toSqlString = (value: string | null): string => (value !== null ? `'${value}'` : 'null');
