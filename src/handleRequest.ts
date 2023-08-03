@@ -70,7 +70,7 @@ const createOrUpdatePatient = async (request: ADTCreationRequest, sqlClient: Cli
     } catch (_) {
         const result = await sqlClient.query(
             `UPDATE patients SET
-                               ins=$2
+                               ins=$2,
                                birth_lastname=$3,
                                used_lastname=$4,
                                birth_firstname=$5,
