@@ -54,7 +54,7 @@ const createOrUpdatePatient = async (request: ADTCreationRequest, sqlClient: Cli
     const sex = request.PID.administrativeSex?.identifier ?? null;
     const birth_code = findPatientBirthPlace(request.PID.patientAddress)?.countyCode?.identifier ?? null;
     try {
-        const result = await sqlClient.query(`INSERT INTO patients VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);`, [
+        const result = await sqlClient.query(`INSERT INTO FranceINSReferential VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);`, [
             oid,
             ins,
             birth_lastname,
@@ -69,7 +69,7 @@ const createOrUpdatePatient = async (request: ADTCreationRequest, sqlClient: Cli
         return result.rowCount;
     } catch (_) {
         const result = await sqlClient.query(
-            `UPDATE patients SET
+            `UPDATE FranceINSReferential SET
                                ins=$2,
                                birth_lastname=$3,
                                used_lastname=$4,
@@ -97,7 +97,7 @@ const deleteINS = async (request: ADTDeleteRequest, sqlClient: Client) => {
     }
 
     const result = await sqlClient.query(
-        `UPDATE patients SET
+        `UPDATE FranceINSReferential SET
                            ins=null
                          WHERE
                            oid=$1 `,
